@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quin_DENGIKEN CMS管理画面</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr 350px;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(10, 10, 10, 0.9);
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            background: linear-gradient(135deg, #00d4ff, #ffd60a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #00d4ff;
+            font-weight: 700;
+            padding: 10px 20px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+        }
+
+        .nav-item.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-left-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        /* Main Content */
+        .main-content {
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .content-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            color: #00d4ff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #00d4ff, #ffd60a);
+            color: #0a0a0a;
+            border: none;
+            font-weight: 700;
+        }
+
+        button.primary:hover {
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+        }
+
+        button.danger {
+            background: rgba(255, 100, 100, 0.2);
+            border-color: rgba(255, 100, 100, 0.4);
+            color: #ff6464;
+        }
+
+        button.danger:hover {
+            background: rgba(255, 100, 100, 0.4);
+        }
+
+        /* Form Styles */
+        .form-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00d4ff;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 26, 46, 0.6);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: rgba(0, 212, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+            background: rgba(26, 26, 46, 0.8);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Items List */
+        .items-list {
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .item-card {
+            background: rgba(26, 26, 46, 0.6);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            border-color: rgba(0, 212, 255, 0.5);
+            background: rgba(26, 26, 46, 0.9);
+        }
+
+        .item-card.selected {
+            border-color: rgba(0, 212, 255, 0.8);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .item-meta {
+            font-size: 12px;
+            color: #808080;
+        }
+
+        /* Right Panel - Preview */
+        .preview-panel {
+            background: rgba(10, 10, 10, 0.8);
+            border-left: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .preview-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #00d4ff;
+            letter-spacing: 1px;
+        }
+
+        .preview-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .preview-data {
+            background: rgba(26, 26, 46, 0.6);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            color: #00d4ff;
+        }
+
+        .section-info {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 3px solid #00d4ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .member-avatar-preview {
+            font-size: 40px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #b0b0b0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .tab-btn.active {
+            border-bottom-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.4);
+        }
+
+        /* Success message */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 100, 0.2);
+            border: 1px solid rgba(0, 255, 100, 0.4);
+            color: #00ff64;
+            padding: 15px 20px;
+            border-radius: 4px;
+            animation: slideIn 0.3s ease-out;
+            z-index: 2000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .two-col-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar, .preview-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">CMS管理画面</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">基本情報</div>
+                <div class="nav-item active" data-section="site-settings">
+                    <i class="fas fa-cog"></i> サイト設定
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">コンテンツ</div>
+                <div class="nav-item" data-section="about">
+                    <i class="fas fa-info-circle"></i> チーム紹介
+                </div>
+                <div class="nav-item" data-section="members">
+                    <i class="fas fa-users"></i> メンバー管理
+                </div>
+                <div class="nav-item" data-section="schedule">
+                    <i class="fas fa-calendar"></i> スケジュール
+                </div>
+                <div class="nav-item" data-section="gallery">
+                    <i class="fas fa-images"></i> ギャラリー
+                </div>
+                <div class="nav-item" data-section="blog">
+                    <i class="fas fa-newspaper"></i> ブログ・お知らせ
+                </div>
+                <div class="nav-item" data-section="contact">
+                    <i class="fas fa-envelope"></i> お問い合わせ設定
+                </div>
+                <div class="nav-item" data-section="footer">
+                    <i class="fas fa-info"></i> フッター情報
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">データ管理</div>
+                <div class="nav-item" data-section="import-export">
+                    <i class="fas fa-exchange"></i> インポート/エクスポート
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Site Settings -->
+            <div class="form-section active" id="site-settings">
+                <div class="content-header">
+                    <div class="content-title">サイト設定</div>
+                    <button class="primary" onclick="saveSiteSettings()">保存</button>
+                </div>
+
+                <div class="section-info">サイト全体の基本情報を管理します</div>
+
+                <div class="form-group">
+                    <label>サイトタイトル</label>
+                    <input type="text" id="siteTitle" placeholder="Quin DENGIKEN">
+                </div>
+
+                <div class="form-group">
+                    <label>サブタイトル</label>
+                    <input type="text" id="siteSubtitle" placeholder="芝浦工業大学附属中学高等学校 電子技術研究部">
+                </div>
+
+                <div class="form-group">
+                    <label>キャッチフレーズ</label>
+                    <textarea id="siteCatchphrase"></textarea>
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">ロゴ画像</h3>
+
+                <div class="form-group">
+                    <label>ロゴ画像をアップロード</label>
+                    <input type="file" id="logoImageInput" accept="image/*" onchange="previewLogoImage(event)">
+                    <div style="margin-top: 15px; text-align: center;">
+                        <div id="logoPreview" style="width: 200px; height: 200px; margin: 0 auto; background: rgba(26, 26, 46, 0.6); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #808080; font-size: 14px;">
+                            プレビュー
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">色設定</h3>
+
+                <div class="form-group">
+                    <label>プライマリカラー（シアン）</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="primaryColor" value="#00d4ff">
+                        <span style="font-family: monospace; font-size: 12px;" id="primaryColorHex">#00d4ff</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>セカンダリカラー（黄色）</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="secondaryColor" value="#ffd60a">
+                        <span style="font-family: monospace; font-size: 12px;" id="secondaryColorHex">#ffd60a</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>背景グラデーション開始色</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="bgColor1" value="#0a0a0a">
+                        <span style="font-family: monospace; font-size: 12px;" id="bgColor1Hex">#0a0a0a</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>背景グラデーション終了色</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="bgColor2" value="#1a1a2e">
+                        <span style="font-family: monospace; font-size: 12px;" id="bgColor2Hex">#1a1a2e</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="form-section" id="about">
+                <div class="content-header">
+                    <div class="content-title">チーム紹介</div>
+                    <button class="primary" onclick="saveAbout()">保存</button>
+                </div>
+
+                <div class="section-info">チーム紹介ページの内容を編集します</div>
+
+                <div class="form-group">
+                    <label>チーム説明</label>
+                    <textarea id="aboutText" placeholder="チームについての説明"></textarea>
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">統計情報</h3>
+
+                <div class="two-col-form">
+                    <div class="form-group">
+                        <label>ロボット数</label>
+                        <input type="text" id="robotCount" placeholder="15+">
+                    </div>
+                    <div class="form-group">
+                        <label>メンバー数</label>
+                        <input type="text" id="memberCount" placeholder="20+">
+                    </div>
+                    <div class="form-group">
+                        <label>国内大会参加数</label>
+                        <input type="text" id="domesticEvents" placeholder="5+">
+                    </div>
+                    <div class="form-group">
+                        <label>国際大会参加数</label>
+                        <input type="text" id="internationalEvents" placeholder="2+">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Section -->
+            <div class="form-section" id="members">
+                <div class="content-header">
+                    <div class="content-title">メンバー管理</div>
+                    <div class="action-buttons">
+                        <button class="primary" onclick="addMember()"><i class="fas fa-plus"></i> 新規追加</button>
+                        <button onclick="deleteSelectedMember()" class="danger">削除</button>
+                    </div>
+                </div>
+
+                <div class="section-info">チームメンバーの情報を追加・編集・削除します</div>
+
+                <div class="items-list" id="membersList"></div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0, 212, 255, 0.2);">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">メンバー編集</h3>
+
+                    <div class="form-group">
+                        <label>アバター画像をアップロード（または絵文字）</label>
+                        <input type="file" id="memberAvatarInput" accept="image/*" onchange="previewMemberAvatar(event)">
+                        <div style="margin-top: 10px; text-align: center;">
+                            <img id="memberAvatarPreview" src="" alt="アバタープレビュー" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(0, 212, 255, 0.3); display: none;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>または絵文字を入力</label>
+                        <input type="text" id="memberAvatar" placeholder="🤖" maxlength="2">
+                        <div class="member-avatar-preview" id="avatarPreview">🤖</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>名前</label>
+                        <input type="text" id="memberName" placeholder="田中 太郎">
+                    </div>
+
+                    <div class="form-group">
+                        <label>役職</label>
+                        <input type="text" id="memberRole" placeholder="チームキャプテン">
+                    </div>
+
+                    <div class="form-group">
+                        <label>紹介文</label>
+                        <textarea id="memberBio" placeholder="メンバーの紹介文"></textarea>
+                    </div>
+
+                    <div class="action-buttons" style="justify-content: flex-end;">
+                        <button class="primary" onclick="saveMember()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Section -->
+            <div class="form-section" id="schedule">
+                <div class="content-header">
+                    <div class="content-title">大会スケジュール</div>
+                    <div class="action-buttons">
+                        <button class="primary" onclick="addSchedule()"><i class="fas fa-plus"></i> 新規追加</button>
+                        <button onclick="deleteSelectedSchedule()" class="danger">削除</button>
+                    </div>
+                </div>
+
+                <div class="section-info">大会スケジュール情報を管理します</div>
+
+                <div class="items-list" id="scheduleList"></div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0, 212, 255, 0.2);">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">スケジュール編集</h3>
+
+                    <div class="form-group">
+                        <label>開催日</label>
+                        <input type="date" id="eventDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label>大会名</label>
+                        <input type="text" id="eventName" placeholder="ロボカップジャパンオープン 2024">
+                    </div>
+
+                    <div class="form-group">
+                        <label>開催地</label>
+                        <input type="text" id="eventLocation" placeholder="東京都">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ステータス</label>
+                        <select id="eventStatus">
+                            <option value="upcoming">予定中</option>
+                            <option value="completed">終了</option>
+                        </select>
+                    </div>
+
+                    <div class="action-buttons" style="justify-content: flex-end;">
+                        <button class="primary" onclick="saveSchedule()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Section -->
+            <div class="form-section" id="gallery">
+                <div class="content-header">
+                    <div class="content-title">ギャラリー</div>
+                    <div class="action-buttons">
+                        <button class="primary" onclick="addGallery()"><i class="fas fa-plus"></i> 画像追加</button>
+                        <button onclick="deleteSelectedGallery()" class="danger">削除</button>
+                    </div>
+                </div>
+
+                <div class="section-info">ギャラリー画像の情報を管理します。URL形式で登録してください</div>
+
+                <div class="items-list" id="galleryList"></div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0, 212, 255, 0.2);">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">画像編集</h3>
+
+                    <div class="form-group">
+                        <label>画像をアップロード</label>
+                        <input type="file" id="galleryImageInput" accept="image/*" onchange="previewGalleryImage(event)">
+                        <div style="margin-top: 15px; text-align: center;">
+                            <img id="galleryImagePreview" src="" alt="ギャラリープレビュー" style="max-width: 200px; max-height: 200px; border-radius: 4px; border: 1px solid rgba(0, 212, 255, 0.2); display: none;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>または画像URL</label>
+                        <input type="url" id="galleryUrl" placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label>画像タイトル（オプション）</label>
+                        <input type="text" id="galleryTitle" placeholder="画像のタイトル">
+                    </div>
+
+                    <div class="action-buttons" style="justify-content: flex-end;">
+                        <button class="primary" onclick="saveGallery()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Section -->
+            <div class="form-section" id="blog">
+                <div class="content-header">
+                    <div class="content-title">ブログ・お知らせ</div>
+                    <div class="action-buttons">
+                        <button class="primary" onclick="addBlog()"><i class="fas fa-plus"></i> 新規作成</button>
+                        <button onclick="deleteSelectedBlog()" class="danger">削除</button>
+                    </div>
+                </div>
+
+                <div class="section-info">ブログ記事とお知らせを管理します</div>
+
+                <div class="items-list" id="blogList"></div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0, 212, 255, 0.2);">
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;">ブログ編集</h3>
+
+                    <div class="form-group">
+                        <label>投稿日</label>
+                        <input type="date" id="blogDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label>タイトル</label>
+                        <input type="text" id="blogTitle" placeholder="ブログのタイトル">
+                    </div>
+
+                    <div class="form-group">
+                        <label>本文</label>
+                        <textarea id="blogContent" placeholder="ブログの内容"></textarea>
+                    </div>
+
+                    <div class="action-buttons" style="justify-content: flex-end;">
+                        <button class="primary" onclick="saveBlog()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="form-section" id="contact">
+                <div class="content-header">
+                    <div class="content-title">お問い合わせ設定</div>
+                    <button class="primary" onclick="saveContact()">保存</button>
+                </div>
+
+                <div class="section-info">お問い合わせフォームの設定を管理します</div>
+
+                <div class="form-group">
+                    <label>メールアドレス（送信先）</label>
+                    <input type="email" id="contactEmail" placeholder="contact@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label>メール件名テンプレート</label>
+                    <input type="text" id="contactEmailSubject" placeholder="新しいお問い合わせ: {name}">
+                </div>
+
+                <div class="form-group">
+                    <label>自動返信メッセージ</label>
+                    <textarea id="contactAutoReply" placeholder="お問い合わせありがとうございます。確認後、ご連絡いたします。"></textarea>
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">フォーム項目</h3>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="contactShowPhone" checked> 電話番号フィールドを表示
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="contactShowCompany" checked> 会社名フィールドを表示
+                    </label>
+                </div>
+            </div>
+
+            <!-- Footer Section -->
+            <div class="form-section" id="footer">
+                <div class="content-header">
+                    <div class="content-title">フッター情報</div>
+                    <button class="primary" onclick="saveFooter()">保存</button>
+                </div>
+
+                <div class="section-info">サイト下部のフッター情報を管理します</div>
+
+                <h3 style="color: #00d4ff; margin-bottom: 20px;">セクション1</h3>
+
+                <div class="form-group">
+                    <label>セクションタイトル</label>
+                    <input type="text" id="footer1Title" placeholder="Quin DENGIKEN">
+                </div>
+
+                <div class="form-group">
+                    <label>リンク1</label>
+                    <input type="text" id="footer1Link1" placeholder="ホーム">
+                </div>
+
+                <div class="form-group">
+                    <label>リンク2</label>
+                    <input type="text" id="footer1Link2" placeholder="チーム紹介">
+                </div>
+
+                <div class="form-group">
+                    <label>リンク3</label>
+                    <input type="text" id="footer1Link3" placeholder="メンバー">
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">セクション2</h3>
+
+                <div class="form-group">
+                    <label>セクションタイトル</label>
+                    <input type="text" id="footer2Title" placeholder="大会情報">
+                </div>
+
+                <div class="form-group">
+                    <label>リンク1</label>
+                    <input type="text" id="footer2Link1" placeholder="スケジュール">
+                </div>
+
+                <div class="form-group">
+                    <label>リンク2</label>
+                    <input type="text" id="footer2Link2" placeholder="ギャラリー">
+                </div>
+
+                <div class="form-group">
+                    <label>リンク3</label>
+                    <input type="text" id="footer2Link3" placeholder="ブログ">
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">セクション3</h3>
+
+                <div class="form-group">
+                    <label>セクションタイトル</label>
+                    <input type="text" id="footer3Title" placeholder="連絡先">
+                </div>
+
+                <div class="form-group">
+                    <label>連絡先メールアドレス</label>
+                    <input type="email" id="footer3Email" placeholder="quin@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label>その他情報</label>
+                    <input type="text" id="footer3Info" placeholder="お問い合わせ">
+                </div>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">コピーライト</h3>
+
+                <div class="form-group">
+                    <label>コピーライト表記</label>
+                    <input type="text" id="footerCopyright" placeholder="© 2024 Quin_DENGIKEN All Rights Reserved.">
+                </div>
+            </div>
+
+            <!-- Import/Export Section -->
+            <div class="form-section" id="import-export">
+                <div class="content-header">
+                    <div class="content-title">データのインポート/エクスポート</div>
+                </div>
+
+                <div class="section-info">
+                    サイトデータをJSON形式で管理します。<br>
+                    エクスポートで現在のデータをバックアップ、インポートで以前のデータを復元できます
+                </div>
+
+                <h3 style="color: #00d4ff; margin-bottom: 20px;">エクスポート（ダウンロード）</h3>
+
+                <p style="margin-bottom: 15px;">現在のすべてのサイトデータをJSON形式でダウンロードします</p>
+
+                <button class="primary" onclick="exportData()" style="width: 100%; padding: 15px; margin-bottom: 30px;">
+                    <i class="fas fa-download"></i> JSONをダウンロード
+                </button>
+
+                <h3 style="color: #00d4ff; margin-bottom: 20px;">インポート（アップロード）</h3>
+
+                <p style="margin-bottom: 15px;">以前エクスポートしたJSONファイルをアップロードしてデータを復元します</p>
+
+                <div class="form-group">
+                    <input type="file" id="importFile" accept=".json">
+                </div>
+
+                <button class="primary" onclick="importData()" style="width: 100%; padding: 15px;">
+                    <i class="fas fa-upload"></i> JSONをインポート
+                </button>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 20px;">現在のデータ</h3>
+
+                <div class="preview-data" id="exportPreview" style="max-height: 300px;"></div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <div class="preview-title">データプレビュー</div>
+            </div>
+            <div class="preview-content">
+                <div class="preview-data" id="previewData">
+                    セクションを編集するとプレビューが表示されます
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete Data Structure
+        const defaultData = {
+            site: {
+                title: 'Quin DENGIKEN',
+                subtitle: '芝浦工業大学附属中学高等学校 電子技術研究部',
+                catchphrase: '赤外線ビジョンを搭載したロボカップサッカーチーム',
+                logoImage: '',
+                colors: {
+                    primary: '#00d4ff',
+                    secondary: '#ffd60a',
+                    bg1: '#0a0a0a',
+                    bg2: '#1a1a2e'
+                }
+            },
+            about: {
+                text: 'Quin_DENGIKENは、芝浦工業大学附属中学高等学校の電子技術研究部に属するロボカップサッカーチームです。',
+                stats: { robots: '15+', members: '20+', domestic: '5+', international: '2+' }
+            },
+            members: [
+                { avatar: '🤖', avatarImage: '', name: '田中 太郎', role: 'チームキャプテン', bio: 'ロボットの制御システムとAIアルゴリズムを担当。' }
+            ],
+            schedule: [
+                { date: '2024-08-02', name: 'ロボカップジャパンオープン 2024', location: '東京都', status: 'completed' }
+            ],
+            gallery: [
+                { url: '', imageData: '', title: 'ギャラリー画像1' },
+                { url: '', imageData: '', title: 'ギャラリー画像2' }
+            ],
+            blog: [
+                { date: '2024-09-20', title: '新ロボット「AURORA」がデビュー', content: '最新のAIアルゴリズムを搭載した新ロボット「AURORA」が完成しました。' }
+            ],
+            contact: {
+                email: 'contact@example.com',
+                emailSubject: '新しいお問い合わせ: {name}',
+                autoReply: 'お問い合わせありがとうございます。確認後、ご連絡いたします。',
+                showPhone: true,
+                showCompany: true
+            },
+            footer: {
+                section1: { title: 'Quin DENGIKEN', links: ['ホーム', 'チーム紹介', 'メンバー'] },
+                section2: { title: '大会情報', links: ['スケジュール', 'ギャラリー', 'ブログ'] },
+                section3: { title: '連絡先', email: 'quin@example.com', info: 'お問い合わせ' },
+                copyright: '© 2024 Quin_DENGIKEN All Rights Reserved.'
+            }
+        };
+
+        let currentData = JSON.parse(localStorage.getItem('quinData')) || defaultData;
+        let selectedMemberId = null;
+        let selectedScheduleId = null;
+        let selectedGalleryId = null;
+        let selectedBlogId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+            setupNavigationListeners();
+            setupColorPickers();
+            renderAllItems();
+            updatePreview();
+        });
+
+        // Navigation
+        function setupNavigationListeners() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    switchSection(section);
+                });
+            });
+        }
+
+        function switchSection(sectionId) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            updatePreview();
+        }
+
+        // Color Picker Setup
+        function setupColorPickers() {
+            ['primaryColor', 'secondaryColor', 'bgColor1', 'bgColor2'].forEach(id => {
+                document.getElementById(id).addEventListener('input', function() {
+                    document.getElementById(id + 'Hex').textContent = this.value;
+                });
+            });
+        }
+
+        // Load All Data
+        function loadAllData() {
+            // Site Settings
+            document.getElementById('siteTitle').value = currentData.site.title;
+            document.getElementById('siteSubtitle').value = currentData.site.subtitle;
+            document.getElementById('siteCatchphrase').value = currentData.site.catchphrase;
+            
+            if (currentData.site.logoImage) {
+                document.getElementById('logoPreview').innerHTML = `<img src="${currentData.site.logoImage}" style="max-width: 100%; max-height: 100%; border-radius: 4px;">`;
+            }
+            
+            document.getElementById('primaryColor').value = currentData.site.colors.primary;
+            document.getElementById('secondaryColor').value = currentData.site.colors.secondary;
+            document.getElementById('bgColor1').value = currentData.site.colors.bg1;
+            document.getElementById('bgColor2').value = currentData.site.colors.bg2;
+            setupColorPickers();
+
+            // About
+            document.getElementById('aboutText').value = currentData.about.text;
+            document.getElementById('robotCount').value = currentData.about.stats.robots;
+            document.getElementById('memberCount').value = currentData.about.stats.members;
+            document.getElementById('domesticEvents').value = currentData.about.stats.domestic;
+            document.getElementById('internationalEvents').value = currentData.about.stats.international;
+
+            // Contact
+            document.getElementById('contactEmail').value = currentData.contact.email;
+            document.getElementById('contactEmailSubject').value = currentData.contact.emailSubject;
+            document.getElementById('contactAutoReply').value = currentData.contact.autoReply;
+            document.getElementById('contactShowPhone').checked = currentData.contact.showPhone;
+            document.getElementById('contactShowCompany').checked = currentData.contact.showCompany;
+
+            // Footer
+            document.getElementById('footer1Title').value = currentData.footer.section1.title;
+            document.getElementById('footer1Link1').value = currentData.footer.section1.links[0];
+            document.getElementById('footer1Link2').value = currentData.footer.section1.links[1];
+            document.getElementById('footer1Link3').value = currentData.footer.section1.links[2];
+            document.getElementById('footer2Title').value = currentData.footer.section2.title;
+            document.getElementById('footer2Link1').value = currentData.footer.section2.links[0];
+            document.getElementById('footer2Link2').value = currentData.footer.section2.links[1];
+            document.getElementById('footer2Link3').value = currentData.footer.section2.links[2];
+            document.getElementById('footer3Title').value = currentData.footer.section3.title;
+            document.getElementById('footer3Email').value = currentData.footer.section3.email;
+            document.getElementById('footer3Info').value = currentData.footer.section3.info;
+            document.getElementById('footerCopyright').value = currentData.footer.copyright;
+
+            renderAllItems();
+        }
+
+        function renderAllItems() {
+            renderMembers();
+            renderSchedule();
+            renderGallery();
+            renderBlog();
+        }
+
+        // Save Functions
+        function saveSiteSettings() {
+            currentData.site = {
+                title: document.getElementById('siteTitle').value,
+                subtitle: document.getElementById('siteSubtitle').value,
+                catchphrase: document.getElementById('siteCatchphrase').value,
+                logoImage: currentData.site.logoImage || '',
+                colors: {
+                    primary: document.getElementById('primaryColor').value,
+                    secondary: document.getElementById('secondaryColor').value,
+                    bg1: document.getElementById('bgColor1').value,
+                    bg2: document.getElementById('bgColor2').value
+                }
+            };
+            saveData();
+            showSuccess('サイト設定を保存しました');
+        }
+
+        function saveAbout() {
+            currentData.about = {
+                text: document.getElementById('aboutText').value,
+                stats: {
+                    robots: document.getElementById('robotCount').value,
+                    members: document.getElementById('memberCount').value,
+                    domestic: document.getElementById('domesticEvents').value,
+                    international: document.getElementById('internationalEvents').value
+                }
+            };
+            saveData();
+            showSuccess('チーム紹介を保存しました');
+        }
+
+        function saveContact() {
+            currentData.contact = {
+                email: document.getElementById('contactEmail').value,
+                emailSubject: document.getElementById('contactEmailSubject').value,
+                autoReply: document.getElementById('contactAutoReply').value,
+                showPhone: document.getElementById('contactShowPhone').checked,
+                showCompany: document.getElementById('contactShowCompany').checked
+            };
+            saveData();
+            showSuccess('お問い合わせ設定を保存しました');
+        }
+
+        function saveFooter() {
+            currentData.footer = {
+                section1: {
+                    title: document.getElementById('footer1Title').value,
+                    links: [
+                        document.getElementById('footer1Link1').value,
+                        document.getElementById('footer1Link2').value,
+                        document.getElementById('footer1Link3').value
+                    ]
+                },
+                section2: {
+                    title: document.getElementById('footer2Title').value,
+                    links: [
+                        document.getElementById('footer2Link1').value,
+                        document.getElementById('footer2Link2').value,
+                        document.getElementById('footer2Link3').value
+                    ]
+                },
+                section3: {
+                    title: document.getElementById('footer3Title').value,
+                    email: document.getElementById('footer3Email').value,
+                    info: document.getElementById('footer3Info').value
+                },
+                copyright: document.getElementById('footerCopyright').value
+            };
+            saveData();
+            showSuccess('フッター情報を保存しました');
+        }
+
+        function saveData() {
+            localStorage.setItem('quinData', JSON.stringify(currentData));
+            updatePreview();
+        }
+
+        // Members
+        function renderMembers() {
+            const list = document.getElementById('membersList');
+            list.innerHTML = '';
+            currentData.members.forEach((member, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card' + (selectedMemberId === index ? ' selected' : '');
+                card.innerHTML = `<div class="item-header"><div><div class="item-title">${member.avatar} ${member.name}</div><div class="item-meta">${member.role}</div></div></div>`;
+                card.addEventListener('click', () => selectMember(index));
+                list.appendChild(card);
+            });
+        }
+
+        function selectMember(index) {
+            selectedMemberId = index;
+            const member = currentData.members[index];
+            document.getElementById('memberAvatar').value = member.avatar;
+            document.getElementById('memberName').value = member.name;
+            document.getElementById('memberRole').value = member.role;
+            document.getElementById('memberBio').value = member.bio;
+            
+            if (member.avatarImage) {
+                document.getElementById('memberAvatarPreview').src = member.avatarImage;
+                document.getElementById('memberAvatarPreview').style.display = 'block';
+                document.getElementById('avatarPreview').style.display = 'none';
+            } else {
+                document.getElementById('avatarPreview').textContent = member.avatar;
+                document.getElementById('avatarPreview').style.display = 'block';
+                document.getElementById('memberAvatarPreview').style.display = 'none';
+            }
+            renderMembers();
+            updatePreview();
+        }
+
+        function addMember() {
+            currentData.members.push({ avatar: '🤖', name: '新規メンバー', role: '役職', bio: '紹介文' });
+            selectedMemberId = currentData.members.length - 1;
+            renderMembers();
+            selectMember(selectedMemberId);
+        }
+
+        function saveMember() {
+            if (selectedMemberId === null) return;
+            currentData.members[selectedMemberId] = {
+                avatar: document.getElementById('memberAvatar').value || '🤖',
+                avatarImage: currentData.members[selectedMemberId]?.avatarImage || '',
+                name: document.getElementById('memberName').value,
+                role: document.getElementById('memberRole').value,
+                bio: document.getElementById('memberBio').value
+            };
+            saveData();
+            showSuccess('メンバー情報を保存しました');
+            renderMembers();
+        }
+
+        function deleteSelectedMember() {
+            if (selectedMemberId === null) return;
+            if (confirm('このメンバーを削除しますか？')) {
+                currentData.members.splice(selectedMemberId, 1);
+                selectedMemberId = null;
+                saveData();
+                showSuccess('メンバーを削除しました');
+                renderMembers();
+                document.getElementById('memberAvatar').value = '';
+                document.getElementById('memberName').value = '';
+            }
+        }
+
+        document.getElementById('memberAvatar')?.addEventListener('input', function() {
+            document.getElementById('avatarPreview').textContent = this.value || '🤖';
+        });
+
+        // Schedule
+        function renderSchedule() {
+            const list = document.getElementById('scheduleList');
+            list.innerHTML = '';
+            currentData.schedule.forEach((event, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card' + (selectedScheduleId === index ? ' selected' : '');
+                card.innerHTML = `<div class="item-header"><div><div class="item-title">${event.name}</div><div class="item-meta">${event.date} - ${event.location}</div></div></div>`;
+                card.addEventListener('click', () => selectSchedule(index));
+                list.appendChild(card);
+            });
+        }
+
+        function selectSchedule(index) {
+            selectedScheduleId = index;
+            const event = currentData.schedule[index];
+            document.getElementById('eventDate').value = event.date;
+            document.getElementById('eventName').value = event.name;
+            document.getElementById('eventLocation').value = event.location;
+            document.getElementById('eventStatus').value = event.status;
+            renderSchedule();
+            updatePreview();
+        }
+
+        function addSchedule() {
+            const today = new Date().toISOString().split('T')[0];
+            currentData.schedule.push({ date: today, name: '新規大会', location: '開催地', status: 'upcoming' });
+            selectedScheduleId = currentData.schedule.length - 1;
+            renderSchedule();
+            selectSchedule(selectedScheduleId);
+        }
+
+        function saveSchedule() {
+            if (selectedScheduleId === null) return;
+            currentData.schedule[selectedScheduleId] = {
+                date: document.getElementById('eventDate').value,
+                name: document.getElementById('eventName').value,
+                location: document.getElementById('eventLocation').value,
+                status: document.getElementById('eventStatus').value
+            };
+            saveData();
+            showSuccess('スケジュールを保存しました');
+            renderSchedule();
+        }
+
+        function deleteSelectedSchedule() {
+            if (selectedScheduleId === null) return;
+            if (confirm('削除しますか？')) {
+                currentData.schedule.splice(selectedScheduleId, 1);
+                selectedScheduleId = null;
+                saveData();
+                showSuccess('スケジュールを削除しました');
+                renderSchedule();
+            }
+        }
+
+        // Gallery
+        function renderGallery() {
+            const list = document.getElementById('galleryList');
+            list.innerHTML = '';
+            currentData.gallery.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card' + (selectedGalleryId === index ? ' selected' : '');
+                card.innerHTML = `<div class="item-header"><div><div class="item-title">${item.title}</div><div class="item-meta">${item.url.substring(0, 30)}...</div></div></div>`;
+                card.addEventListener('click', () => selectGallery(index));
+                list.appendChild(card);
+            });
+        }
+
+        function selectGallery(index) {
+            selectedGalleryId = index;
+            const item = currentData.gallery[index];
+            document.getElementById('galleryUrl').value = item.url;
+            document.getElementById('galleryTitle').value = item.title;
+            
+            if (item.imageData) {
+                document.getElementById('galleryImagePreview').src = item.imageData;
+                document.getElementById('galleryImagePreview').style.display = 'block';
+            } else {
+                document.getElementById('galleryImagePreview').style.display = 'none';
+            }
+            renderGallery();
+            updatePreview();
+        }
+
+        function addGallery() {
+            currentData.gallery.push({ url: '', title: '新規画像' });
+            selectedGalleryId = currentData.gallery.length - 1;
+            renderGallery();
+            selectGallery(selectedGalleryId);
+        }
+
+        function saveGallery() {
+            if (selectedGalleryId === null) return;
+            currentData.gallery[selectedGalleryId] = {
+                url: document.getElementById('galleryUrl').value,
+                imageData: currentData.gallery[selectedGalleryId]?.imageData || '',
+                title: document.getElementById('galleryTitle').value
+            };
+            saveData();
+            showSuccess('ギャラリー画像を保存しました');
+            renderGallery();
+        }
+
+        function deleteSelectedGallery() {
+            if (selectedGalleryId === null) return;
+            if (confirm('削除しますか？')) {
+                currentData.gallery.splice(selectedGalleryId, 1);
+                selectedGalleryId = null;
+                saveData();
+                showSuccess('画像を削除しました');
+                renderGallery();
+            }
+        }
+
+        // Blog
+        function renderBlog() {
+            const list = document.getElementById('blogList');
+            list.innerHTML = '';
+            currentData.blog.forEach((post, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card' + (selectedBlogId === index ? ' selected' : '');
+                card.innerHTML = `<div class="item-header"><div><div class="item-title">${post.title}</div><div class="item-meta">${post.date}</div></div></div>`;
+                card.addEventListener('click', () => selectBlog(index));
+                list.appendChild(card);
+            });
+        }
+
+        function selectBlog(index) {
+            selectedBlogId = index;
+            const post = currentData.blog[index];
+            document.getElementById('blogDate').value = post.date;
+            document.getElementById('blogTitle').value = post.title;
+            document.getElementById('blogContent').value = post.content;
+            renderBlog();
+            updatePreview();
+        }
+
+        function addBlog() {
+            const today = new Date().toISOString().split('T')[0];
+            currentData.blog.push({ date: today, title: '新しいブログ投稿', content: '投稿内容' });
+            selectedBlogId = currentData.blog.length - 1;
+            renderBlog();
+            selectBlog(selectedBlogId);
+        }
+
+        function saveBlog() {
+            if (selectedBlogId === null) return;
+            currentData.blog[selectedBlogId] = {
+                date: document.getElementById('blogDate').value,
+                title: document.getElementById('blogTitle').value,
+                content: document.getElementById('blogContent').value
+            };
+            saveData();
+            showSuccess('ブログを保存しました');
+            renderBlog();
+        }
+
+        function deleteSelectedBlog() {
+            if (selectedBlogId === null) return;
+            if (confirm('削除しますか？')) {
+                currentData.blog.splice(selectedBlogId, 1);
+                selectedBlogId = null;
+                saveData();
+                showSuccess('ブログを削除しました');
+                renderBlog();
+            }
+        }
+
+        // Import/Export
+        function exportData() {
+            const dataStr = JSON.stringify(currentData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'quin-data-' + new Date().toISOString().split('T')[0] + '.json';
+            link.click();
+            showSuccess('データをダウンロードしました');
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) {
+                showError('ファイルを選択してください');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    currentData = importedData;
+                    localStorage.setItem('quinData', JSON.stringify(currentData));
+                    loadAllData();
+                    showSuccess('データをインポートしました');
+                } catch (error) {
+                    showError('JSONファイルが無効です');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Preview
+        function updatePreview() {
+            const section = document.querySelector('.form-section.active').id;
+            let preview = '';
+
+            switch(section) {
+                case 'site-settings':
+                    preview = JSON.stringify(currentData.site, null, 2);
+                    break;
+                case 'about':
+                    preview = JSON.stringify(currentData.about, null, 2);
+                    break;
+                case 'members':
+                    preview = JSON.stringify(currentData.members, null, 2);
+                    break;
+                case 'schedule':
+                    preview = JSON.stringify(currentData.schedule, null, 2);
+                    break;
+                case 'gallery':
+                    preview = JSON.stringify(currentData.gallery, null, 2);
+                    break;
+                case 'blog':
+                    preview = JSON.stringify(currentData.blog, null, 2);
+                    break;
+                case 'contact':
+                    preview = JSON.stringify(currentData.contact, null, 2);
+                    break;
+                case 'footer':
+                    preview = JSON.stringify(currentData.footer, null, 2);
+                    break;
+                case 'import-export':
+                    preview = JSON.stringify(currentData, null, 2);
+                    document.getElementById('exportPreview').textContent = preview;
+                    return;
+            }
+
+            document.getElementById('previewData').textContent = preview;
+        }
+
+        // Notifications
+        function showSuccess(message) {
+            const msg = document.createElement('div');
+            msg.className = 'success-message';
+            msg.textContent = '✓ ' + message;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        function showError(message) {
+            const msg = document.createElement('div');
+            msg.className = 'success-message';
+            msg.style.background = 'rgba(255, 100, 100, 0.2)';
+            msg.style.borderColor = 'rgba(255, 100, 100, 0.4)';
+            msg.style.color = '#ff6464';
+            msg.textContent = '✗ ' + message;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        // Image upload functions
+        function previewLogoImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    currentData.site.logoImage = imageData;
+                    document.getElementById('logoPreview').innerHTML = `<img src="${imageData}" style="max-width: 100%; max-height: 100%; border-radius: 4px;">`;
+                    saveData();
+                    showSuccess('ロゴ画像を保存しました');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewMemberAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    if (selectedMemberId !== null) {
+                        currentData.members[selectedMemberId].avatarImage = imageData;
+                        document.getElementById('memberAvatarPreview').src = imageData;
+                        document.getElementById('memberAvatarPreview').style.display = 'block';
+                        document.getElementById('avatarPreview').style.display = 'none';
+                        saveData();
+                        showSuccess('メンバーアバター画像を保存しました');
+                    } else {
+                        showError('メンバーを選択してください');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewGalleryImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    if (selectedGalleryId !== null) {
+                        currentData.gallery[selectedGalleryId].imageData = imageData;
+                        document.getElementById('galleryImagePreview').src = imageData;
+                        document.getElementById('galleryImagePreview').style.display = 'block';
+                        saveData();
+                        showSuccess('ギャラリー画像を保存しました');
+                    } else {
+                        showError('ギャラリー項目を選択してください');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
