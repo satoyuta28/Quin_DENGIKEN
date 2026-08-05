@@ -1,0 +1,17 @@
+# Netlify configuration
+
+[build]
+  publish = "."
+  command = ""
+
+# フォーム送信後のリダイレクト設定
+[[redirects]]
+  from = "/success"
+  to = "/"
+  status = 200
+
+# form送信後にメインページにとどまる
+[[redirects]]
+  from = "/contact"
+  to = "/"
+  status = 200
